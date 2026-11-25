@@ -1,0 +1,156 @@
+/* ============================================================
+   HallBook — Community Hall Rental and Reservation System
+   Custom Styles (Complements Bootstrap 5)
+   Student: Mark Steven A. Singson | ID: 23202682
+   ============================================================ */
+
+:root {
+    --brand-primary: #0d6efd;
+    --brand-dark: #1e293b;
+    --brand-accent: #2563eb;
+    --bg-light: #f8fafc;
+}
+
+body {
+    background-color: var(--bg-light);
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    color: #334155;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Navbar */
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.35rem;
+    letter-spacing: 0.3px;
+}
+.navbar-brand .badge-tag {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    vertical-align: middle;
+}
+
+/* Stat Cards */
+.stat-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.09);
+}
+.stat-card .stat-number {
+    font-size: 2.3rem;
+    font-weight: 700;
+    line-height: 1.1;
+}
+.stat-card .stat-label {
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    opacity: 0.9;
+}
+
+/* Status Badges */
+.badge-pending {
+    background-color: #fef3c7;
+    color: #92400e;
+    font-weight: 600;
+}
+.badge-confirmed {
+    background-color: #d1fae5;
+    color: #065f46;
+    font-weight: 600;
+}
+.badge-completed {
+    background-color: #e0f2fe;
+    color: #075985;
+    font-weight: 600;
+}
+.badge-cancelled {
+    background-color: #fee2e2;
+    color: #991b1b;
+    font-weight: 600;
+}
+
+.badge-available {
+    background-color: #dcfce7;
+    color: #166534;
+    font-weight: 600;
+}
+.badge-under-maintenance {
+    background-color: #fef9c3;
+    color: #854d0e;
+    font-weight: 600;
+}
+.badge-closed {
+    background-color: #fee2e2;
+    color: #991b1b;
+    font-weight: 600;
+}
+
+/* Cards & Tables */
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+.table > :not(caption) > * > * {
+    padding: 0.85rem 1rem;
+}
+.table th {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #64748b;
+    background-color: #f8fafc;
+}
+
+/* Charge Box */
+.charge-box {
+    background: #f0fdf4;
+    border: 2px dashed #86efac;
+    border-radius: 10px;
+    padding: 1.25rem;
+}
+.charge-amount {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #15803d;
+}
+
+/* Audit log timeline */
+.audit-item {
+    border-left: 3px solid #0d6efd;
+    padding-left: 1rem;
+    margin-bottom: 1.25rem;
+    position: relative;
+}
+.audit-item.audit-CANCELLATION {
+    border-left-color: #dc3545;
+}
+.audit-item.audit-CONFIRMATION {
+    border-left-color: #198754;
+}
+.audit-item.audit-COMPLETION {
+    border-left-color: #0dcaf0;
+}
+
+/* Footer */
+footer {
+    background: #ffffff;
+    border-top: 1px solid #e2e8f0;
+    padding: 1.25rem 0;
+    font-size: 0.85rem;
+    color: #64748b;
+}

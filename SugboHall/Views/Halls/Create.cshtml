@@ -1,0 +1,82 @@
+@model HallBook.Models.Hall
+@{
+    ViewData["Title"] = "Add Hall";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <a href="/Halls" class="text-decoration-none text-muted small"><i class="bi bi-arrow-left"></i> Back to Venues</a>
+                <h2 class="fw-extrabold mb-0 mt-1">Add Community Hall</h2>
+            </div>
+        </div>
+
+        <div class="card-modern p-4 p-md-5">
+            <div class="d-flex align-items-center gap-3 pb-3 mb-4 border-bottom">
+                <div class="avatar-circle" style="width: 48px; height: 48px; font-size: 1.25rem; background: linear-gradient(135deg, #a7f3d0 0%, #10b981 100%); color: #064e3b;">
+                    <i class="bi bi-building-add"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold mb-0">Venue Specifications</h5>
+                    <small class="text-muted">Configure hall capacity, hourly rental pricing, and status.</small>
+                </div>
+            </div>
+
+            <form method="post">
+                @Html.AntiForgeryToken()
+                <div class="row g-3">
+                    <div class="col-md-7">
+                        <label class="form-label fw-bold small text-muted text-uppercase">Hall / Venue Name <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="bi bi-building"></i></span>
+                            <input asp-for="HallName" class="form-control" placeholder="e.g., Lahug Barangay Hall" required />
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label fw-bold small text-muted text-uppercase">Operational Status <span class="text-danger">*</span></label>
+                        <select asp-for="Status" class="form-select">
+                            <option value="Available">Available</option>
+                            <option value="Under Maintenance">Under Maintenance</option>
+                            <option value="Closed">Closed</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-bold small text-muted text-uppercase">Location / Wing / Floor <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="bi bi-geo-alt"></i></span>
+                            <input asp-for="Location" class="form-control" placeholder="Brgy. Lahug, Cebu City" required />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-muted text-uppercase">Capacity (Persons) <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="bi bi-people"></i></span>
+                            <input asp-for="Capacity" class="form-control" type="number" min="1" placeholder="150" required />
+                            <span class="input-group-text bg-light text-muted">pax</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-muted text-uppercase">Hourly Rate (₱) <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted">₱</span>
+                            <input asp-for="RatePerHour" class="form-control" type="number" step="0.01" min="0.01" placeholder="500.00" required />
+                            <span class="input-group-text bg-light text-muted">/ hr</span>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-bold small text-muted text-uppercase">Venue Features & Description</label>
+                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Stage, air conditioning, wireless sound system, projector screen..."></textarea>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                    <a href="/Halls" class="btn btn-light px-4">Cancel</a>
+                    <button type="submit" class="btn btn-gradient-primary px-4 py-2">
+                        <i class="bi bi-check-circle-fill me-1"></i> Save Venue
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

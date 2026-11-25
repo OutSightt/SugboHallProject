@@ -1,0 +1,94 @@
+@{
+    ViewData["Title"] = "Welcome";
+    Layout = "_PublicLayout";
+    var halls = (List<HallBook.Models.Hall>)ViewBag.Halls;
+    var events = (List<HallBook.Models.HallBooking>)ViewBag.Events;
+}
+
+<section class="land-hero">
+    <div class="land-hero-in">
+        <p class="kicker">Maayong pag-abot sa Sugbo</p>
+        <h1>Your celebration,<br />right here in <span>Cebu</span>.</h1>
+        <p class="lead-text">Browse barangay halls, function rooms and open-air pavilions for your fiesta, Sinulog practice, Simbang Gabi or family gathering. See what is coming up, and let the barangay admin team confirm your booking.</p>
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="#venues" class="btn btn-gold btn-lg">See venues</a>
+            <a href="#how" class="btn btn-ghost-light btn-lg">How booking works</a>
+        </div>
+        <div class="hero-stats">
+            <div><b>@halls.Count</b><span>venues open</span></div>
+            <div><b>@events.Count</b><span>events coming up</span></div>
+            <div><b>&#8369;@(halls.Any() ? halls.Min(h => h.RatePerHour).ToString("N0") : "0")</b><span>starting per hour</span></div>
+        </div>
+    </div>
+</section>
+
+@if (ViewBag.DbError == true)
+{
+    <div class="container pt-4">
+        <div class="alert alert-warning mb-0">The venue list could not load because the MySQL database is not reachable yet. Run <b>database/00_run_all.sql</b> in MySQL Workbench and check the password in <b>appsettings.json</b>.</div>
+    </div>
+}
+
+<section id="venues" class="land-sec">
+    <div class="container">
+        <h2 class="sec-title">Venues across Cebu</h2>
+        <p class="sec-sub">Pick a place that fits your crowd and your budget. Fees are per hour.</p>
+        @if (!halls.Any())
+        {
+            <div class="empty-note">No venues to show yet.</div>
+        }
+        <div class="row g-3">
+            @foreach (var h in halls)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="venue-card">
+                        <h3>@h.HallName</h3>
+                        <div class="loc"><i class="bi bi-geo-alt-fill me-1"></i>@h.Location</div>
+                        <p>@h.Description</p>
+                        <div class="d-flex justify-content-between align-items-end">
+                            <div class="price">&#8369;@h.RatePerHour.ToString("N2")<small> / hour</small></div>
+                            <span class="cap"><i class="bi bi-people-fill me-1"></i>@h.Capacity pax</span>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<section id="events" class="land-sec alt">
+    <div class="container">
+        <h2 class="sec-title">Coming up in the community</h2>
+        <p class="sec-sub">Confirmed events. Check these dates before you pick yours.</p>
+        @if (!events.Any())
+        {
+            <div class="empty-note">No confirmed events yet. Be the first to book.</div>
+        }
+        <div class="row g-3">
+            @foreach (var e in events)
+            {
+                <div class="col-md-6">
+                    <div class="event-row">
+                        <div class="date"><b>@e.EventDate.ToString("dd")</b><span>@e.EventDate.ToString("MMM")</span></div>
+                        <div class="flex-grow-1">
+                            <b>@e.EventName</b><br />
+                            <small>@e.HallName &middot; @DateTime.Today.Add(e.StartTime).ToString("h:mm tt") to @DateTime.Today.Add(e.EndTime).ToString("h:mm tt")</small>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<section id="how" class="land-sec">
+    <div class="container">
+        <h2 class="sec-title">How booking works</h2>
+        <p class="sec-sub">Simple, and the fee is worked out for you.</p>
+        <div class="row g-3">
+            <div class="col-md-4"><div class="step"><span>1</span><h3>Choose a venue</h3><p>Look through the venues above and note the one that fits your event and headcount.</p></div></div>
+            <div class="col-md-4"><div class="step"><span>2</span><h3>Tell the barangay office</h3><p>Share your event, date and time. The admin enters your reservation, and the system checks that nobody else has that slot.</p></div></div>
+            <div class="col-md-4"><div class="step"><span>3</span><h3>Get confirmed</h3><p>The total fee is computed automatically from the hours and the venue rate. Once confirmed, your event appears on the list.</p></div></div>
+        </div>
+    </div>
+</section>

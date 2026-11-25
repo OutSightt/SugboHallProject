@@ -1,0 +1,75 @@
+@model HallBook.Models.Resident
+@{ ViewData["Title"] = "Add Resident"; }
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <a href="/Residents" class="text-decoration-none text-muted small"><i class="bi bi-arrow-left"></i> Back to Directory</a>
+                <h2 class="fw-extrabold mb-0 mt-1">Register New Resident</h2>
+            </div>
+        </div>
+
+        <div class="card-modern p-4 p-md-5">
+            <div class="d-flex align-items-center gap-3 pb-3 mb-4 border-bottom">
+                <div class="avatar-circle" style="width: 48px; height: 48px; font-size: 1.25rem;">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold mb-0">Personal & Contact Details</h5>
+                    <small class="text-muted">Fill in all required fields to register this resident.</small>
+                </div>
+            </div>
+
+            <div asp-validation-summary="All" class="alert alert-danger rounded-3" style="display:@(ViewData.ModelState.ErrorCount > 0 ? "block" : "none")"></div>
+
+            <form method="post">
+                @Html.AntiForgeryToken()
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-muted text-uppercase">First Name <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="bi bi-person"></i></span>
+                            <input asp-for="FirstName" class="form-control" placeholder="Jose Mari" required />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-muted text-uppercase">Last Name <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="bi bi-person"></i></span>
+                            <input asp-for="LastName" class="form-control" placeholder="Abellana" required />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-muted text-uppercase">Email Address <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="bi bi-envelope"></i></span>
+                            <input asp-for="Email" class="form-control" type="email" placeholder="josemari.abellana@email.com" required />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-muted text-uppercase">Contact Number <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="bi bi-telephone"></i></span>
+                            <input asp-for="Phone" class="form-control" placeholder="09171234567" required />
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-bold small text-muted text-uppercase">Home / Subdivision Address</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="bi bi-geo-alt"></i></span>
+                            <textarea asp-for="Address" class="form-control" rows="2" placeholder="Sitio Maguikay, Brgy. Lahug, Cebu City"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                    <a href="/Residents" class="btn btn-light px-4">Cancel</a>
+                    <button type="submit" class="btn btn-gradient-primary px-4 py-2">
+                        <i class="bi bi-check-circle-fill me-1"></i> Save Resident
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

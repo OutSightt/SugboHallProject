@@ -1,0 +1,169 @@
+@model HallBook.Models.BookingFormViewModel
+@{
+    ViewData["Title"] = "New Reservation";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <a href="/Bookings" class="text-decoration-none text-muted small"><i class="bi bi-arrow-left"></i> Back to Reservations</a>
+                <h2 class="fw-extrabold mb-0 mt-1">Submit New Reservation</h2>
+            </div>
+        </div>
+
+        <!-- Advanced SQL Challenge Callout Banner -->
+        <div class="card-modern p-3.5 mb-4 border-primary border-opacity-25" style="background: linear-gradient(135deg, #e3f3f6 0%, #f8fafc 100%);">
+            <div class="d-flex align-items-start gap-3">
+                <div class="avatar-circle" style="width: 44px; height: 44px; font-size: 1.25rem; background: linear-gradient(135deg, #1a7f96 0%, #0b5d73 100%); color: #ffffff;">
+                    <i class="bi bi-cpu-fill"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="fw-bold text-dark">Automated Procedural SQL Logic:</span>
+                        <span class="badge bg-primary rounded-pill px-2.5">Phase 2 Requirement</span>
+                    </div>
+                    <ul class="mb-0 small text-muted ps-3" style="line-height: 1.6;">
+                        <li><strong>Stored Function &mdash; <code>CalculateRentalCharge(hall_id, start_time, end_time)</code>:</strong> Executes in real-time as you pick a hall and time range to calculate duration $\times$ rate.</li>
+                        <li><strong>Stored Procedure &mdash; <code>SubmitReservation(...)</code>:</strong> Runs on form submission to validate resident, verify hall status, detect overlapping schedule conflicts, and insert the booking.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Booking Form Card -->
+        <div class="card-modern p-4 p-md-5">
+            <form method="post" id="reservationForm">
+                @Html.AntiForgeryToken()
+                <div class="row g-3">
+                    <!-- Resident Selector -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-muted text-uppercase">Resident Organizer <span class="text-danger">*</span></label>
+                        <select name="Booking.ResidentId" id="residentId" class="form-select" required>
+                            <option value="">-- Select Resident --</option>
+                            @foreach (var r in Model.Residents)
+                            {
+                                var sel = r.ResidentId == Model.Booking.ResidentId;
+                                <option value="@r.ResidentId" selected="@(sel ? "selected" : null)">
+                                    @r.LastName, @r.FirstName (@r.Email)
+                                </option>
+                            }
+                        </select>
+                        <small class="text-muted">Not registered? <a href="/Residents/Create" target="_blank" class="text-primary text-decoration-none">Register resident &rarr;</a></small>
+                    </div>
+
+                    <!-- Hall Selector -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-muted text-uppercase">Community Hall / Venue <span class="text-danger">*</span></label>
+                        <select name="Booking.HallId" id="hallId" class="form-select" required onchange="calcCharge()">
+                            <option value="" data-rate="0">-- Select Available Hall --</option>
+                            @foreach (var h in Model.Halls)
+                            {
+                                var sel = h.HallId == Model.Booking.HallId;
+                                <option value="@h.HallId" data-rate="@h.RatePerHour" selected="@(sel ? "selected" : null)">
+                                    @h.HallName (₱@h.RatePerHour.ToString("N2")/hr &bull; @h.Capacity pax)
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Event Title -->
+                    <div class="col-12">
+                        <label class="form-label fw-bold small text-muted text-uppercase">Event Name / Purpose <span class="text-danger">*</span></label>
+                        <input name="Booking.EventName" class="form-control" required placeholder="e.g., Sinulog Practice, Fiesta Salo-salo, Simbang Gabi Fellowship" value="@Model.Booking.EventName" />
+                    </div>
+
+                    <!-- Date & Time Slots -->
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small text-muted text-uppercase">Event Date <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="bi bi-calendar"></i></span>
+                            <input name="Booking.EventDate" id="eventDate" type="date" class="form-control" required value="@Model.Booking.EventDate.ToString("yyyy-MM-dd")" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small text-muted text-uppercase">Start Time <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="bi bi-clock"></i></span>
+                            <input name="Booking.StartTime" id="startTime" type="time" class="form-control" required value="@Model.Booking.StartTime.ToString(@"hh\:mm")" onchange="calcCharge()" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small text-muted text-uppercase">End Time <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="bi bi-clock-fill"></i></span>
+                            <input name="Booking.EndTime" id="endTime" type="time" class="form-control" required value="@Model.Booking.EndTime.ToString(@"hh\:mm")" onchange="calcCharge()" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Real-Time Interactive Charge Calculator Box -->
+                <div class="calculator-box my-4">
+                    <div class="d-inline-flex align-items-center gap-1.5 badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 mb-2">
+                        <i class="bi bi-lightning-charge-fill"></i> Computed via MySQL Stored Function: <code>CalculateRentalCharge</code>
+                    </div>
+                    <div class="calculated-fee" id="chargeDisplay">₱0.00</div>
+                    <div class="text-muted small mt-1" id="durationDisplay">
+                        Select a hall and time interval to calculate rental charge automatically.
+                    </div>
+                </div>
+
+                <!-- Submit Button calling Stored Procedure -->
+                <div class="d-flex flex-wrap justify-content-end gap-2 pt-2 border-top">
+                    <a href="/Bookings" class="btn btn-light px-4">Cancel</a>
+                    <button type="submit" class="btn btn-gradient-primary px-4 py-2.5 fw-bold d-flex align-items-center gap-2">
+                        <i class="bi bi-send-check-fill"></i>
+                        <span>Submit Reservation (Call Stored Procedure)</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+function calcCharge() {
+    const hallSelect = document.getElementById('hallId');
+    const hallId = hallSelect.value;
+    const st = document.getElementById('startTime').value;
+    const et = document.getElementById('endTime').value;
+    const chargeDisplay = document.getElementById('chargeDisplay');
+    const durationDisplay = document.getElementById('durationDisplay');
+
+    if (!hallId || !st || !et) {
+        chargeDisplay.textContent = '₱0.00';
+        durationDisplay.textContent = 'Select a hall and time interval to calculate rental charge automatically.';
+        return;
+    }
+
+    // Call AJAX endpoint that queries MySQL Stored Function: CalculateRentalCharge
+    fetch(`/Bookings/CalculateCharge?hallId=${encodeURIComponent(hallId)}&startTime=${encodeURIComponent(st)}&endTime=${encodeURIComponent(et)}`)
+        .then(r => r.json())
+        .then(d => {
+            if (d.success) {
+                const formatted = Number(d.charge).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                chargeDisplay.textContent = '₱' + formatted;
+                
+                const selectedOption = hallSelect.selectedOptions[0];
+                const rate = selectedOption ? Number(selectedOption.dataset.rate || 0) : 0;
+                
+                const [sh, sm] = st.split(':').map(Number);
+                const [eh, em] = et.split(':').map(Number);
+                const hrs = Math.max(0, ((eh * 60 + em) - (sh * 60 + sm)) / 60);
+
+                durationDisplay.innerHTML = `<span class="badge bg-success me-1">Valid Duration</span> <strong>${hrs.toFixed(1)} hour(s)</strong> &times; ₱${rate.toFixed(2)}/hr = <strong>₱${formatted}</strong>`;
+            } else {
+                chargeDisplay.textContent = '₱0.00';
+                durationDisplay.innerHTML = `<span class="text-danger fw-semibold"><i class="bi bi-exclamation-circle me-1"></i>${d.error || 'Invalid time range'}</span>`;
+            }
+        })
+        .catch(err => {
+            console.error(err);
+        });
+}
+
+// Initial calculation
+document.addEventListener('DOMContentLoaded', calcCharge);
+</script>
+}

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SugboHall</title>
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="~/css/site.css" asp-append-version="true" rel="stylesheet" />
+</head>
+<body class="pub">
+    <div class="pennants"></div>
+    <header class="pub-nav">
+        <a class="brand" href="/">Sugbo<i>Hall</i></a>
+        <nav>
+            <a href="/#venues">Venues</a>
+            <a href="/#events">Events</a>
+            <a href="/#how">How it works</a>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <a class="btn btn-gold" href="/Admin">Admin dashboard</a>
+            }
+            else
+            {
+                <a class="btn btn-gold" href="/Admin/Login"><i class="bi bi-person-lock me-1"></i>Admin login</a>
+            }
+        </nav>
+    </header>
+
+    @RenderBody()
+
+    <footer class="pub-foot">
+        <div><b>SugboHall</b> &mdash; Cebu community events &amp; venue booking</div>
+        <div class="small">Sinulog, fiestas, Simbang Gabi and barangay gatherings &bull; Cebu, Philippines</div>
+    </footer>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

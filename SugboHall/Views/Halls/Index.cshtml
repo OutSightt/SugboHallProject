@@ -1,0 +1,153 @@
+@model List<HallBook.Models.Hall>
+@{
+    ViewData["Title"] = "Community Halls";
+    string search = ViewBag.Search as string ?? "";
+    string currentStatus = ViewBag.StatusFilter as string ?? "";
+}
+
+<!-- Page Header -->
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <div class="d-flex align-items-center gap-2">
+            <h2 class="fw-extrabold mb-0">Community Halls & Venues</h2>
+            <span class="badge bg-success-subtle text-success rounded-pill px-3 py-1">@Model.Count venues</span>
+        </div>
+        <p class="text-muted mb-0">Browse venues, manage capacity configurations, hourly rental rates, and maintenance states.</p>
+    </div>
+    <a href="/Halls/Create" class="btn btn-gradient-primary px-3 py-2 d-flex align-items-center gap-2">
+        <i class="bi bi-building-add"></i>
+        <span>Add New Hall</span>
+    </a>
+</div>
+
+<!-- Search & Status Filter Strip -->
+<div class="card-modern p-3 mb-4">
+    <div class="row g-3 align-items-center">
+        <!-- Filter Pills -->
+        <div class="col-lg-6">
+            <div class="filter-pills-wrap">
+                <a href="/Halls?search=@search" class="filter-pill @(string.IsNullOrEmpty(currentStatus) ? "active" : "")">
+                    All Halls
+                </a>
+                <a href="/Halls?status=Available&search=@search" class="filter-pill @(currentStatus == "Available" ? "active" : "")">
+                    <span class="d-inline-block rounded-circle bg-success me-1" style="width: 7px; height: 7px;"></span> Available
+                </a>
+                <a href="/Halls?status=Under Maintenance&search=@search" class="filter-pill @(currentStatus == "Under Maintenance" ? "active" : "")">
+                    <span class="d-inline-block rounded-circle bg-warning me-1" style="width: 7px; height: 7px;"></span> Under Maintenance
+                </a>
+                <a href="/Halls?status=Closed&search=@search" class="filter-pill @(currentStatus == "Closed" ? "active" : "")">
+                    <span class="d-inline-block rounded-circle bg-danger me-1" style="width: 7px; height: 7px;"></span> Closed
+                </a>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="col-lg-6">
+            <form method="get" class="d-flex gap-2 justify-content-lg-end">
+                <input type="hidden" name="status" value="@currentStatus" />
+                <div class="input-group" style="max-width: 380px;">
+                    <span class="input-group-text bg-white border-end-0 text-muted ps-3">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" name="search" class="form-control border-start-0 ps-1" placeholder="Search hall name or location..." value="@search" />
+                    <button class="btn btn-primary px-3" type="submit">Search</button>
+                    @if (!string.IsNullOrEmpty(search) || !string.IsNullOrEmpty(currentStatus))
+                    {
+                        <a href="/Halls" class="btn btn-outline-secondary px-2.5" title="Reset Filters">
+                            <i class="bi bi-x-lg"></i>
+                        </a>
+                    }
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Hall Cards Grid -->
+<div class="row g-4">
+    @foreach (var h in Model)
+    {
+        var statusClass = h.Status switch
+        {
+            "Available" => "status-available",
+            "Under Maintenance" => "status-under-maintenance",
+            "Closed" => "status-closed",
+            _ => "bg-secondary text-white"
+        };
+
+        <div class="col-md-6 col-lg-4">
+            <div class="hall-card h-100">
+                <!-- Card Header with Gradient & Rate Badge -->
+                <div class="hall-header-gradient">
+                    <div>
+                        <span class="badge-status @statusClass bg-white bg-opacity-90">@h.Status</span>
+                    </div>
+                    <div class="hall-rate-badge">
+                        ₱@h.RatePerHour.ToString("N2") <span class="text-muted fw-normal" style="font-size: 0.75rem;">/ hr</span>
+                    </div>
+                </div>
+
+                <!-- Card Body -->
+                <div class="p-3.5 px-4 d-flex flex-column flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-start mb-1">
+                        <h5 class="fw-extrabold text-dark mb-0">@h.HallName</h5>
+                    </div>
+                    
+                    <div class="text-muted small mb-3">
+                        <i class="bi bi-geo-alt-fill text-danger me-1"></i>@h.Location
+                    </div>
+
+                    <!-- Meta specs row -->
+                    <div class="row g-2 mb-3 bg-light rounded-3 p-2.5 text-center">
+                        <div class="col-6 border-end">
+                            <small class="text-muted text-uppercase fw-semibold d-block" style="font-size: 0.7rem;">Capacity</small>
+                            <span class="fw-bold text-dark fs-6">
+                                <i class="bi bi-people-fill text-primary me-1"></i>@h.Capacity pax
+                            </span>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted text-uppercase fw-semibold d-block" style="font-size: 0.7rem;">Active Bookings</small>
+                            <span class="fw-bold text-dark fs-6">
+                                <i class="bi bi-calendar2-check-fill text-success me-1"></i>@h.ActiveBookings active
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <p class="text-muted small flex-grow-1 mb-4" style="line-height: 1.5;">
+                        @(h.Description?.Length > 110 ? h.Description[..110] + "..." : h.Description ?? "No description provided.")
+                    </p>
+
+                    <!-- Action Bar -->
+                    <div class="pt-3 border-top d-flex justify-content-between align-items-center">
+                        <a href="/Halls/Details/@h.HallId" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold">
+                            <i class="bi bi-calendar3 me-1"></i> View Schedule
+                        </a>
+                        <div class="d-flex gap-1.5">
+                            <a href="/Halls/Edit/@h.HallId" class="btn btn-sm btn-light border rounded-pill px-2.5" title="Edit Hall">
+                                <i class="bi bi-pencil-fill text-muted"></i>
+                            </a>
+                            <form method="post" asp-action="Delete" asp-route-id="@h.HallId" class="d-inline" onsubmit="return confirm('Delete @h.HallName?');">
+                                @Html.AntiForgeryToken()
+                                <button class="btn btn-sm btn-light border rounded-pill px-2.5 text-danger" title="Delete Hall">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="col-12">
+            <div class="card-modern py-5 text-center text-muted">
+                <i class="bi bi-building-slash display-5 d-block mb-2 text-secondary"></i>
+                <div class="fw-bold fs-5">No community halls found</div>
+                <small>Try clearing your filter or add a new community hall to the system.</small>
+            </div>
+        </div>
+    }
+</div>

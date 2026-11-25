@@ -1,0 +1,156 @@
+@model List<HallBook.Models.HallBooking>
+@{
+    ViewData["Title"] = "Reservations";
+    string search = ViewBag.Search as string ?? "";
+    string currentStatus = ViewBag.StatusFilter as string ?? "";
+}
+
+<!-- Page Header -->
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <div class="d-flex align-items-center gap-2">
+            <h2 class="fw-extrabold mb-0">Hall Reservations</h2>
+            <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-1">@Model.Count record(s)</span>
+        </div>
+        <p class="text-muted mb-0">Search, filter by status, review details, and trigger state transitions (Pending &rarr; Confirmed &rarr; Completed / Cancelled).</p>
+    </div>
+    <a href="/Bookings/Create" class="btn btn-gradient-primary px-3 py-2 d-flex align-items-center gap-2">
+        <i class="bi bi-calendar-plus-fill"></i>
+        <span>New Reservation</span>
+    </a>
+</div>
+
+<!-- Filter Pills & Search Card -->
+<div class="card-modern p-3 mb-4">
+    <div class="row g-3 align-items-center">
+        <!-- Status Filter Pills -->
+        <div class="col-lg-7">
+            <div class="filter-pills-wrap">
+                <a href="/Bookings?search=@search" class="filter-pill @(string.IsNullOrEmpty(currentStatus) ? "active" : "")">
+                    All Bookings
+                </a>
+                <a href="/Bookings?status=Pending&search=@search" class="filter-pill @(currentStatus == "Pending" ? "active" : "")">
+                    <span class="d-inline-block rounded-circle bg-warning me-1" style="width: 7px; height: 7px;"></span> Pending Review
+                </a>
+                <a href="/Bookings?status=Confirmed&search=@search" class="filter-pill @(currentStatus == "Confirmed" ? "active" : "")">
+                    <span class="d-inline-block rounded-circle bg-success me-1" style="width: 7px; height: 7px;"></span> Confirmed
+                </a>
+                <a href="/Bookings?status=Completed&search=@search" class="filter-pill @(currentStatus == "Completed" ? "active" : "")">
+                    <span class="d-inline-block rounded-circle bg-info me-1" style="width: 7px; height: 7px;"></span> Completed
+                </a>
+                <a href="/Bookings?status=Cancelled&search=@search" class="filter-pill @(currentStatus == "Cancelled" ? "active" : "")">
+                    <span class="d-inline-block rounded-circle bg-danger me-1" style="width: 7px; height: 7px;"></span> Cancelled
+                </a>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="col-lg-5">
+            <form method="get" class="d-flex gap-2 justify-content-lg-end">
+                <input type="hidden" name="status" value="@currentStatus" />
+                <div class="input-group" style="max-width: 360px;">
+                    <span class="input-group-text bg-white border-end-0 text-muted ps-3">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" name="search" class="form-control border-start-0 ps-1" placeholder="Search event, resident, hall..." value="@search" />
+                    <button class="btn btn-primary px-3" type="submit">Search</button>
+                    @if (!string.IsNullOrEmpty(search) || !string.IsNullOrEmpty(currentStatus))
+                    {
+                        <a href="/Bookings" class="btn btn-outline-secondary px-2.5" title="Clear Filters">
+                            <i class="bi bi-x-lg"></i>
+                        </a>
+                    }
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Bookings Table Card -->
+<div class="card-modern overflow-hidden">
+    <div class="table-responsive">
+        <table class="table-modern">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">Ref #</th>
+                    <th>Event Title</th>
+                    <th>Resident</th>
+                    <th>Hall / Venue</th>
+                    <th>Scheduled Date & Time</th>
+                    <th>Rental Fee</th>
+                    <th>Status</th>
+                    <th class="text-end" style="width: 140px;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var b in Model)
+                {
+                    var statusClass = b.Status switch
+                    {
+                        "Pending" => "status-pending",
+                        "Confirmed" => "status-confirmed",
+                        "Completed" => "status-completed",
+                        "Cancelled" => "status-cancelled",
+                        _ => "bg-secondary text-white"
+                    };
+
+                    string initials = "R";
+                    if (!string.IsNullOrEmpty(b.ResidentFirstName) && !string.IsNullOrEmpty(b.ResidentLastName))
+                    {
+                        initials = $"{b.ResidentFirstName[0]}{b.ResidentLastName[0]}";
+                    }
+
+                    <tr>
+                        <td class="fw-bold text-muted">
+                            <span class="badge bg-light text-dark border px-2 py-1">#@b.BookingId</span>
+                        </td>
+                        <td>
+                            <a href="/Bookings/Details/@b.BookingId" class="text-decoration-none fw-extrabold text-dark d-block">
+                                @b.EventName
+                            </a>
+                            <small class="text-muted">Recorded @b.CreatedAt.ToString("MMM dd, yyyy")</small>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="avatar-circle">@initials</div>
+                                <div>
+                                    <div class="fw-bold text-dark">@b.ResidentFullName</div>
+                                    <small class="text-muted"><i class="bi bi-telephone me-1"></i>@b.ResidentPhone</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="fw-semibold text-dark"><i class="bi bi-geo-alt-fill text-danger me-1"></i>@b.HallName</div>
+                            <small class="text-muted">₱@b.HallRate.ToString("N2")/hr</small>
+                        </td>
+                        <td>
+                            <div class="fw-bold text-dark">@b.EventDate.ToString("MMM dd, yyyy")</div>
+                            <small class="text-muted"><i class="bi bi-clock me-1"></i>@b.StartTime.ToString(@"hh\:mm") – @b.EndTime.ToString(@"hh\:mm")</small>
+                        </td>
+                        <td>
+                            <span class="fw-extrabold text-success fs-6">₱@b.TotalCharge.ToString("N2")</span>
+                        </td>
+                        <td>
+                            <span class="badge-status @statusClass">@b.Status</span>
+                        </td>
+                        <td class="text-end">
+                            <a href="/Bookings/Details/@b.BookingId" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                View & Manage <i class="bi bi-chevron-right ms-1"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="8" class="text-center py-5 text-muted">
+                            <i class="bi bi-calendar-x display-5 d-block mb-2 text-secondary"></i>
+                            <div class="fw-bold fs-5">No reservations found</div>
+                            <small>No records matched your search or status filter. Try resetting filters.</small>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

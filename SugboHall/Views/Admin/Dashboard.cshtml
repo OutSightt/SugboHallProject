@@ -1,0 +1,285 @@
+@model HallBook.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    int total = Model.TotalBookings;
+    int pendingPct = total > 0 ? (Model.PendingBookings * 100 / total) : 0;
+    int confirmedPct = total > 0 ? (Model.ConfirmedBookings * 100 / total) : 0;
+    int completedPct = total > 0 ? (Model.CompletedBookings * 100 / total) : 0;
+}
+
+<!-- Hero Welcome Section -->
+<div class="hero-banner mb-4">
+    <div class="row align-items-center">
+        <div class="col-lg-8 mb-3 mb-lg-0">
+            <div class="d-inline-flex align-items-center gap-2 bg-white bg-opacity-10 border border-white border-opacity-20 px-3 py-1 rounded-pill mb-2">
+                <span class="badge bg-warning text-dark fw-bold" style="font-size: 0.7rem;">CEBU</span>
+                <span class="text-white small fw-semibold">Cebu Community Events &amp; Venue Booking</span>
+            </div>
+            <h1 class="fw-extrabold display-6 mb-2">Maayong adlaw, Administrator 👋</h1>
+            <p class="mb-0 text-white text-opacity-75" style="max-width: 620px;">
+                Manage barangay and community event bookings across Cebu, monitor venue occupancy, calculate rates automatically via MySQL routines, and review automated audit trails.
+            </p>
+        </div>
+        <div class="col-lg-4 text-lg-end">
+            <div class="d-flex flex-wrap gap-2 justify-content-lg-end">
+                <a href="/Bookings/Create" class="btn btn-light fw-bold text-primary shadow-sm px-3.5 py-2">
+                    <i class="bi bi-calendar-plus-fill text-primary me-1"></i> New Booking
+                </a>
+                <a href="/Audit" class="btn btn-outline-light px-3 py-2">
+                    <i class="bi bi-journal-text me-1"></i> View Audit
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 4 Top KPI Cards -->
+<div class="row g-3 mb-4">
+    <!-- Total Residents -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                    <div class="kpi-label">Registered Residents</div>
+                    <div class="kpi-number text-dark mt-1">@Model.TotalResidents</div>
+                </div>
+                <div class="kpi-icon-wrap" style="background-color: var(--primary-light); color: var(--primary);">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+            </div>
+            <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                <span class="text-muted small">Active community members</span>
+                <a href="/Residents" class="text-primary text-decoration-none small fw-semibold">Manage &rarr;</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Community Halls -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                    <div class="kpi-label">Community Venues</div>
+                    <div class="kpi-number text-dark mt-1">@Model.TotalHalls</div>
+                </div>
+                <div class="kpi-icon-wrap" style="background-color: var(--success-light); color: var(--success);">
+                    <i class="bi bi-houses-fill"></i>
+                </div>
+            </div>
+            <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                <span class="text-muted small">Available rental spaces</span>
+                <a href="/Halls" class="text-success text-decoration-none small fw-semibold">Explore &rarr;</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Bookings -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                    <div class="kpi-label">Total Reservations</div>
+                    <div class="kpi-number text-dark mt-1">@Model.TotalBookings</div>
+                </div>
+                <div class="kpi-icon-wrap" style="background-color: #f3e8ff; color: #7c3aed;">
+                    <i class="bi bi-calendar-event-fill"></i>
+                </div>
+            </div>
+            <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                <span class="text-muted small">All-time booking records</span>
+                <a href="/Bookings" class="text-purple text-decoration-none small fw-semibold" style="color: #7c3aed;">View all &rarr;</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmed Bookings -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                    <div class="kpi-label">Confirmed Events</div>
+                    <div class="kpi-number text-dark mt-1">@Model.ConfirmedBookings</div>
+                </div>
+                <div class="kpi-icon-wrap" style="background-color: var(--info-light); color: var(--info);">
+                    <i class="bi bi-check2-circle"></i>
+                </div>
+            </div>
+            <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                <span class="text-muted small">Approved & upcoming</span>
+                <a href="/Bookings?status=Confirmed" class="text-info text-decoration-none small fw-semibold">Inspect &rarr;</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reservation Status Breakdown & Quick Action Strip -->
+<div class="row g-3 mb-4">
+    <!-- Status Breakdown -->
+    <div class="col-lg-8">
+        <div class="card-modern p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h5 class="fw-bold mb-0">Booking Status Distribution</h5>
+                    <small class="text-muted">Proportion of reservations across operational workflows</small>
+                </div>
+                <span class="badge bg-light text-dark border px-2.5 py-1 fw-semibold">@Model.TotalBookings Total</span>
+            </div>
+
+            <!-- Progress bar -->
+            <div class="progress rounded-pill mb-3" style="height: 12px; background-color: #e2e8f0;">
+                <div class="progress-bar bg-warning" role="progressbar" style="width: @pendingPct%" title="Pending: @Model.PendingBookings"></div>
+                <div class="progress-bar bg-success" role="progressbar" style="width: @confirmedPct%" title="Confirmed: @Model.ConfirmedBookings"></div>
+                <div class="progress-bar bg-info" role="progressbar" style="width: @completedPct%" title="Completed: @Model.CompletedBookings"></div>
+            </div>
+
+            <!-- Legend pills -->
+            <div class="d-flex flex-wrap gap-4 pt-1">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="d-inline-block rounded-circle bg-warning" style="width: 10px; height: 10px;"></span>
+                    <span class="small fw-semibold text-dark">Pending Review:</span>
+                    <span class="badge bg-warning-subtle text-warning-emphasis fw-bold">@Model.PendingBookings</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="d-inline-block rounded-circle bg-success" style="width: 10px; height: 10px;"></span>
+                    <span class="small fw-semibold text-dark">Confirmed:</span>
+                    <span class="badge bg-success-subtle text-success fw-bold">@Model.ConfirmedBookings</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="d-inline-block rounded-circle bg-info" style="width: 10px; height: 10px;"></span>
+                    <span class="small fw-semibold text-dark">Completed:</span>
+                    <span class="badge bg-info-subtle text-info fw-bold">@Model.CompletedBookings</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Navigation Actions -->
+    <div class="col-lg-4">
+        <div class="card-modern p-4 h-100 d-flex flex-column justify-content-between">
+            <h5 class="fw-bold mb-3">Quick Shortcuts</h5>
+            <div class="d-grid gap-2">
+                <a href="/Bookings/Create" class="btn btn-outline-primary text-start d-flex align-items-center gap-2.5 py-2.5 rounded-3">
+                    <i class="bi bi-calendar-plus-fill fs-5 text-primary"></i>
+                    <div>
+                        <div class="fw-bold" style="font-size: 0.92rem;">Book a Hall</div>
+                        <small class="text-muted">Calculates fee via Stored Function</small>
+                    </div>
+                </a>
+                <a href="/Residents/Create" class="btn btn-outline-secondary text-start d-flex align-items-center gap-2.5 py-2.5 rounded-3">
+                    <i class="bi bi-person-plus-fill fs-5 text-dark"></i>
+                    <div>
+                        <div class="fw-bold" style="font-size: 0.92rem;">Register Resident</div>
+                        <small class="text-muted">Add new community organizer</small>
+                    </div>
+                </a>
+                <a href="/Halls/Create" class="btn btn-outline-secondary text-start d-flex align-items-center gap-2.5 py-2.5 rounded-3">
+                    <i class="bi bi-building-add fs-5 text-dark"></i>
+                    <div>
+                        <div class="fw-bold" style="font-size: 0.92rem;">Add New Venue</div>
+                        <small class="text-muted">Configure hourly rate & capacity</small>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Reservations Table Card -->
+<div class="card-modern shadow-sm overflow-hidden mb-4">
+    <div class="p-3.5 px-4 bg-white border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <div>
+            <h5 class="fw-bold mb-0 d-flex align-items-center gap-2">
+                <i class="bi bi-clock-history text-primary"></i> Recent Reservations
+            </h5>
+            <small class="text-muted">Latest bookings processed by the database</small>
+        </div>
+        <a href="/Bookings" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+            View All Bookings <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table-modern">
+            <thead>
+                <tr>
+                    <th>Ref #</th>
+                    <th>Event Details</th>
+                    <th>Resident</th>
+                    <th>Hall / Venue</th>
+                    <th>Date & Time</th>
+                    <th>Rental Fee</th>
+                    <th>Status</th>
+                    <th class="text-end">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var b in Model.RecentBookings)
+                {
+                    var statusClass = b.Status switch
+                    {
+                        "Pending" => "status-pending",
+                        "Confirmed" => "status-confirmed",
+                        "Completed" => "status-completed",
+                        "Cancelled" => "status-cancelled",
+                        _ => "bg-secondary text-white"
+                    };
+
+                    string initials = "R";
+                    if (!string.IsNullOrEmpty(b.ResidentFirstName) && !string.IsNullOrEmpty(b.ResidentLastName))
+                    {
+                        initials = $"{b.ResidentFirstName[0]}{b.ResidentLastName[0]}";
+                    }
+
+                    <tr>
+                        <td class="fw-bold text-muted">
+                            <span class="badge bg-light text-dark border px-2 py-1">#@b.BookingId</span>
+                        </td>
+                        <td>
+                            <a href="/Bookings/Details/@b.BookingId" class="text-decoration-none fw-bold text-dark d-block">
+                                @b.EventName
+                            </a>
+                            <small class="text-muted">Created @b.CreatedAt.ToString("MMM dd, yyyy")</small>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="avatar-circle">@initials</div>
+                                <div>
+                                    <div class="fw-semibold text-dark">@b.ResidentFullName</div>
+                                    <small class="text-muted">Resident</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="fw-semibold text-dark"><i class="bi bi-geo-alt text-danger me-1"></i>@b.HallName</div>
+                        </td>
+                        <td>
+                            <div class="fw-semibold text-dark">@b.EventDate.ToString("MMM dd, yyyy")</div>
+                            <small class="text-muted"><i class="bi bi-clock me-1"></i>@b.StartTime.ToString(@"hh\:mm") – @b.EndTime.ToString(@"hh\:mm")</small>
+                        </td>
+                        <td>
+                            <span class="fw-bold text-success" style="font-size: 1.05rem;">₱@b.TotalCharge.ToString("N2")</span>
+                        </td>
+                        <td>
+                            <span class="badge-status @statusClass">@b.Status</span>
+                        </td>
+                        <td class="text-end">
+                            <a href="/Bookings/Details/@b.BookingId" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                View <i class="bi bi-chevron-right ms-1"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.RecentBookings.Any())
+                {
+                    <tr>
+                        <td colspan="8" class="text-center py-5 text-muted">
+                            <i class="bi bi-calendar-x display-6 d-block mb-2 text-secondary"></i>
+                            <div class="fw-semibold">No bookings recorded yet</div>
+                            <small>Create your first reservation to see it listed here.</small>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

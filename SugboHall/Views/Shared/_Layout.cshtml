@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SugboHall &bull; Cebu Community Events</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <!-- Custom Aesthetic Stylesheet -->
+    <link href="~/css/site.css" asp-append-version="true" rel="stylesheet" />
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+<div class="app-shell">
+    <aside class="side">
+        <a class="brand" href="/">Sugbo<i>Hall</i></a>
+        <div class="tagline">Cebu events and venues</div>
+        <a class="nav-link-custom" href="/Admin"><i class="bi bi-grid-1x2-fill me-2 opacity-75"></i>Dashboard</a>
+        <a class="nav-link-custom" href="/Bookings"><i class="bi bi-calendar-check-fill me-2 opacity-75"></i>Bookings</a>
+        <a class="nav-link-custom" href="/Halls"><i class="bi bi-house-door-fill me-2 opacity-75"></i>Venues</a>
+        <a class="nav-link-custom" href="/Residents"><i class="bi bi-people-fill me-2 opacity-75"></i>Residents</a>
+        <a class="nav-link-custom" href="/Audit"><i class="bi bi-clock-history me-2 opacity-75"></i>Audit log</a>
+        <div class="spacer"></div>
+        <a href="/Bookings/Create" class="btn btn-gradient-primary mb-2" style="background:#f6b73c;color:#3a2800;box-shadow:none"><i class="bi bi-plus-circle-fill me-1"></i> New reservation</a>
+        <a class="nav-link-custom" href="/" style="font-size:.9rem"><i class="bi bi-house-heart-fill me-2 opacity-75"></i>View welcome page</a>
+        <form method="post" asp-controller="Admin" asp-action="Logout" class="m-0">
+            <button type="submit" class="side-btn w-100"><i class="bi bi-box-arrow-left me-1"></i>Sign out (@(User.Identity?.Name))</button>
+        </form>
+        <div class="db-chip mt-2"><i class="bi bi-database-check me-1"></i>MySQL 8.0 &bull; sugbo_events</div>
+    </aside>
+    <div class="content">
+    <div class="pennants"></div>
+    <main>
+        <!-- Toast Flash Alerts -->
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success border-0 shadow-sm rounded-4 d-flex align-items-center gap-3 mb-4 p-3 fade show" role="alert" style="background-color: #ecfdf5; border-left: 4px solid #10b981 !important;">
+                <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; min-width: 32px;">
+                    <i class="bi bi-check-lg"></i>
+                </div>
+                <div class="flex-grow-1 text-dark fw-semibold" style="font-size: 0.95rem;">
+                    @TempData["Success"]
+                </div>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger border-0 shadow-sm rounded-4 d-flex align-items-center gap-3 mb-4 p-3 fade show" role="alert" style="background-color: #fef2f2; border-left: 4px solid #ef4444 !important;">
+                <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; min-width: 32px;">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <div class="flex-grow-1 text-dark fw-semibold" style="font-size: 0.95rem;">
+                    @TempData["Error"]
+                </div>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @RenderBody()
+    </main>
+    
+
+    <!-- Aesthetic Footer -->
+    <footer>
+            <b>SugboHall</b> &mdash; Cebu community events &amp; venue booking &bull; Sinulog, fiestas, Simbang Gabi and barangay gatherings
+        </footer>
+    </div>
+</div>
+
+    <!-- Bootstrap JS -->
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Active navbar link highlight
+        document.addEventListener("DOMContentLoaded", function () {
+            const currentPath = window.location.pathname.toLowerCase();
+            document.querySelectorAll(".nav-link-custom").forEach(link => {
+                const href = link.getAttribute("href").toLowerCase();
+                if ((href === "/" && currentPath === "/") || (href !== "/" && currentPath.startsWith(href))) {
+                    link.classList.add("active");
+                }
+            });
+        });
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
